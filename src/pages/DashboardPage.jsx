@@ -8,7 +8,9 @@ import { useToast } from '../context/ToastContext';
 export default function DashboardPage() {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const [dashboardEvents, setDashboardEvents] = useState([]);
+  const [hostedEvents, setHostedEvents] = useState([]);
+  const [registeredEvents, setRegisteredEvents] = useState([]);
+  const [dashboardTab, setDashboardTab] = useState('hosted');
   const [stats, setStats] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
@@ -23,7 +25,7 @@ export default function DashboardPage() {
   const [filterBatch, setFilterBatch] = useState('');
   const [sortConfig, setSortConfig] = useState('name_asc');
 
-  // Club request status (for users who signed up as club_admin but are pending/rejected)
+  // Club request status
   const [clubRequest, setClubRequest] = useState(null);
 
   const isAdmin = user?.role === 'club_admin';
@@ -31,7 +33,8 @@ export default function DashboardPage() {
   const fetchDashboardEvents = async () => {
     if (!user) return;
     
-    let fetchedEvents = [];
+    let fetchedHosted = [];
+    let fetchedRegistered = [];
     let calcStats = [];
     let calcChart = [];
     let calcCategories = [];
@@ -48,35 +51,58 @@ export default function DashboardPage() {
     const catCounts = { 'Hackathon': 0, 'Workshop': 0, 'Seminar': 0, 'Meetup': 0, 'Other': 0 };
 
     if (isAdmin) {
-      const { data, error } = await supabase
+      // 1. Fetch Hosted Events
+      const { data: hostedData, error: hostedError } = await supabase
         .from('events')
         .select('*, event_registrations(count)')
         .eq('organizer_id', user.id)
         .order('date', { ascending: false });
         
-      if (!error && data) {
-        fetchedEvents = data;
+      if (!hostedError && hostedData) {
+        fetchedHosted = hostedData;
         
-        const totalEvents = data.length;
-        const totalRegistrations = data.reduce((acc, curr) => acc + (curr.event_registrations[0]?.count || 0), 0);
-        const upcoming = data.filter(e => new Date(e.date) >= new Date(new Date().setHours(0,0,0,0))).length;
-        const totalCapacity = data.reduce((acc, curr) => acc + curr.max_seats, 0);
+        const totalEvents = hostedData.length;
+        const totalRegistrations = hostedData.reduce((acc, curr) => acc + (curr.event_registrations[0]?.count || 0), 0);
+        const upcoming = hostedData.filter(e => new Date(e.date) >= new Date(new Date().setHours(0,0,0,0))).length;
+        const totalCapacity = hostedData.reduce((acc, curr) => acc + curr.max_seats, 0);
         const avgFill = totalCapacity > 0 ? Math.round((totalRegistrations / totalCapacity) * 100) : 0;
 
         calcStats = [
-          { label: 'Total Events', value: totalEvents, change: 'All time', icon: <Calendar size={22} />, color: 'bg-blue-100 text-blue-700' },
-          { label: 'Total Registrations', value: totalRegistrations, change: 'All time', icon: <Users size={22} />, color: 'bg-purple-100 text-purple-700' },
-          { label: 'Upcoming Events', value: upcoming, change: 'Planned', icon: <Eye size={22} />, color: 'bg-green-100 text-green-700' },
-          { label: 'Average Fill Rate', value: `${avgFill}%`, change: 'Of total capacity', icon: <TrendingUp size={22} />, color: 'bg-orange-100 text-orange-700' },
+          { label: 'Total Events', value: totalEvents, change: 'All time', icon: <Calendar size={22} />, color: 'bg-accent-muted text-accent' },
+          { label: 'Total Registrations', value: totalRegistrations, change: 'All time', icon: <Users size={22} />, color: 'bg-accent-mutedGreen text-accent-green' },
+          { label: 'Upcoming Events', value: upcoming, change: 'Planned', icon: <Eye size={22} />, color: 'bg-orange-900/40 text-orange-400' },
+          { label: 'Average Fill Rate', value: `${avgFill}%`, change: 'Of total capacity', icon: <TrendingUp size={22} />, color: 'bg-rose-900/40 text-rose-400' },
         ];
 
-        data.forEach(e => {
+        hostedData.forEach(e => {
           const m = new Date(e.created_at).toLocaleString('default', { month: 'short' });
           if (chartCounts[m] !== undefined) chartCounts[m] += (e.event_registrations[0]?.count || 0);
           if (catCounts[e.category] !== undefined) catCounts[e.category] += 1;
         });
       }
+
+      // 2. Fetch Participated Events for Admin too
+      const { data: regs, error: regError } = await supabase
+        .from('event_registrations')
+        .select('event_id, registered_at')
+        .eq('profile_id', user.id);
+        
+      if (!regError && regs && regs.length > 0) {
+        const eventIds = regs.map(r => r.event_id);
+        const { data: eventsData, error: eventsError } = await supabase
+          .from('events')
+          .select('*, event_registrations(count)')
+          .in('id', eventIds);
+          
+        if (!eventsError && eventsData) {
+          fetchedRegistered = eventsData.map(e => {
+             const reg = regs.find(r => r.event_id === e.id);
+             return { ...e, registered_at: reg?.registered_at };
+          });
+        }
+      }
     } else {
+      // Fetch Participated Events for Student
       const { data: regs, error: regError } = await supabase
         .from('event_registrations')
         .select('event_id, registered_at')
@@ -91,47 +117,43 @@ export default function DashboardPage() {
           .in('id', eventIds);
           
         if (!eventsError && eventsData) {
-          // Map events to registration dates
-          const eventsWithRegDate = eventsData.map(e => {
+          fetchedRegistered = eventsData.map(e => {
              const reg = regs.find(r => r.event_id === e.id);
              return { ...e, registered_at: reg?.registered_at };
           });
           
-          fetchedEvents = eventsWithRegDate;
-          
-          const totalAttended = fetchedEvents.length;
-          const upcoming = fetchedEvents.filter(e => new Date(e.date) >= new Date(new Date().setHours(0,0,0,0))).length;
+          const totalAttended = fetchedRegistered.length;
+          const upcoming = fetchedRegistered.filter(e => new Date(e.date) >= new Date(new Date().setHours(0,0,0,0))).length;
 
           const { data: profile } = await supabase.from('profiles').select('hackathons_won, projects(count)').eq('id', user.id).single();
 
           calcStats = [
-            { label: 'Events Registered', value: totalAttended, change: 'All time', icon: <Calendar size={22} />, color: 'bg-blue-100 text-blue-700' },
-            { label: 'Upcoming Events', value: upcoming, change: 'Planned', icon: <Users size={22} />, color: 'bg-purple-100 text-purple-700' },
-            { label: 'Hackathons Won', value: profile?.hackathons_won || 0, change: 'From profile', icon: <Eye size={22} />, color: 'bg-green-100 text-green-700' },
-            { label: 'Projects Built', value: profile?.projects?.[0]?.count || 0, change: 'From profile', icon: <TrendingUp size={22} />, color: 'bg-orange-100 text-orange-700' },
+            { label: 'Events Registered', value: totalAttended, change: 'All time', icon: <Calendar size={22} />, color: 'bg-accent-muted text-accent' },
+            { label: 'Upcoming Events', value: upcoming, change: 'Planned', icon: <Users size={22} />, color: 'bg-accent-mutedGreen text-accent-green' },
+            { label: 'Hackathons Won', value: profile?.hackathons_won || 0, change: 'From profile', icon: <Eye size={22} />, color: 'bg-orange-900/40 text-orange-400' },
+            { label: 'Projects Built', value: profile?.projects?.[0]?.count || 0, change: 'From profile', icon: <TrendingUp size={22} />, color: 'bg-rose-900/40 text-rose-400' },
           ];
 
-          fetchedEvents.forEach(e => {
+          fetchedRegistered.forEach(e => {
             const m = new Date(e.registered_at).toLocaleString('default', { month: 'short' });
             if (chartCounts[m] !== undefined) chartCounts[m] += 1;
             if (catCounts[e.category] !== undefined) catCounts[e.category] += 1;
           });
         }
       } else {
-        // No registrations or error
         const { data: profile } = await supabase.from('profiles').select('hackathons_won, projects(count)').eq('id', user.id).single();
         calcStats = [
-          { label: 'Events Registered', value: 0, change: 'All time', icon: <Calendar size={22} />, color: 'bg-blue-100 text-blue-700' },
-          { label: 'Upcoming Events', value: 0, change: 'Planned', icon: <Users size={22} />, color: 'bg-purple-100 text-purple-700' },
-          { label: 'Hackathons Won', value: profile?.hackathons_won || 0, change: 'From profile', icon: <Eye size={22} />, color: 'bg-green-100 text-green-700' },
-          { label: 'Projects Built', value: profile?.projects?.[0]?.count || 0, change: 'From profile', icon: <TrendingUp size={22} />, color: 'bg-orange-100 text-orange-700' },
+          { label: 'Events Registered', value: 0, change: 'All time', icon: <Calendar size={22} />, color: 'bg-accent-muted text-accent' },
+          { label: 'Upcoming Events', value: 0, change: 'Planned', icon: <Users size={22} />, color: 'bg-accent-mutedGreen text-accent-green' },
+          { label: 'Hackathons Won', value: profile?.hackathons_won || 0, change: 'From profile', icon: <Eye size={22} />, color: 'bg-orange-900/40 text-orange-400' },
+          { label: 'Projects Built', value: profile?.projects?.[0]?.count || 0, change: 'From profile', icon: <TrendingUp size={22} />, color: 'bg-rose-900/40 text-rose-400' },
         ];
       }
     }
 
     calcChart = months.map(m => ({ month: m, value: chartCounts[m] }));
     
-    const catColors = ['bg-purple-500', 'bg-blue-500', 'bg-green-500', 'bg-pink-500', 'bg-orange-500'];
+    const catColors = ['bg-accent', 'bg-accent-green', 'bg-orange-400', 'bg-rose-400', 'bg-blue-400'];
     const totalCats = Math.max(Object.values(catCounts).reduce((a,b) => a+b, 0), 1);
     calcCategories = Object.keys(catCounts)
       .filter(k => catCounts[k] > 0)
@@ -142,20 +164,27 @@ export default function DashboardPage() {
         pct: (catCounts[k] / totalCats) * 100 
       }));
 
-    const formatted = fetchedEvents.map(e => ({
+    const formatEvent = e => ({
        ...e,
        maxSeats: e.max_seats,
        registrations: e.event_registrations ? e.event_registrations[0]?.count || 0 : 0
-    }));
+    });
+
+    const formattedHosted = fetchedHosted.map(formatEvent);
+    const formattedRegistered = fetchedRegistered.map(formatEvent);
 
     setStats(calcStats);
     setChartData(calcChart);
-    setCategoryData(calcCategories.length > 0 ? calcCategories : [{ cat: 'No Data', count: 0, color: 'bg-gray-300', pct: 0 }]);
-    setDashboardEvents(formatted);
+    setCategoryData(calcCategories.length > 0 ? calcCategories : [{ cat: 'No Data', count: 0, color: 'bg-dark-border', pct: 0 }]);
+    setHostedEvents(formattedHosted);
+    setRegisteredEvents(formattedRegistered);
     setLoading(false);
   };
 
   useEffect(() => {
+    if (user) {
+      setDashboardTab(user.role === 'club_admin' ? 'hosted' : 'registered');
+    }
     fetchDashboardEvents();
     fetchClubRequest();
   }, [user]);
@@ -186,7 +215,6 @@ export default function DashboardPage() {
     fetchDashboardEvents();
   };
 
-  // --- Participant Management Logic ---
   const handleViewParticipants = async (event) => {
     setSelectedEvent(event);
     setLoadingParticipants(true);
@@ -202,7 +230,6 @@ export default function DashboardPage() {
       console.error('Error fetching participants:', error);
       showToast('Error loading participants', { type: 'error' });
     } else {
-      console.log('Fetched participants:', data);
       setParticipants(data || []);
     }
     
@@ -289,14 +316,16 @@ export default function DashboardPage() {
   const teamRegistrations = visibleParticipants.filter((registration) => (registration.registration_type || registration.registration_data?.registration_type || 'solo') === 'team');
   const soloRegistrations = visibleParticipants.filter((registration) => (registration.registration_type || registration.registration_data?.registration_type || 'solo') !== 'team');
 
+  const currentEvents = isAdmin && dashboardTab === 'hosted' ? hostedEvents : registeredEvents;
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative bg-dark min-h-screen">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900">
+          <h1 className="text-3xl font-extrabold text-white">
             {isAdmin ? 'Club Dashboard' : 'Student Dashboard'}
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-400 mt-1">
             {isAdmin ? 'Manage your events and track performance.' : 'Track your active event registrations and stats.'}
           </p>
         </div>
@@ -311,26 +340,25 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Club Request Status Banner */}
       {clubRequest && (
         <div className={`mb-6 flex items-start gap-4 rounded-xl border px-5 py-4 ${
           clubRequest.status === 'pending'
-            ? 'bg-amber-50 border-amber-200'
-            : 'bg-red-50 border-red-200'
+            ? 'bg-amber-900/20 border-amber-500/30'
+            : 'bg-red-900/20 border-red-500/30'
         }`}>
           <div className={`mt-0.5 flex-shrink-0 ${
-            clubRequest.status === 'pending' ? 'text-amber-500' : 'text-red-500'
+            clubRequest.status === 'pending' ? 'text-amber-400' : 'text-red-400'
           }`}>
             {clubRequest.status === 'pending' ? <Clock size={22} /> : <XCircle size={22} />}
           </div>
           <div className="flex-1">
             <p className={`font-semibold text-sm ${
-              clubRequest.status === 'pending' ? 'text-amber-800' : 'text-red-800'
+              clubRequest.status === 'pending' ? 'text-amber-200' : 'text-red-200'
             }`}>
               {clubRequest.status === 'pending' ? '⏳ Club Request Pending Review' : '❌ Club Request Rejected'}
             </p>
             <p className={`text-sm mt-0.5 ${
-              clubRequest.status === 'pending' ? 'text-amber-700' : 'text-red-700'
+              clubRequest.status === 'pending' ? 'text-amber-400/80' : 'text-red-400/80'
             }`}>
               {clubRequest.status === 'pending'
                 ? <span>Your request to create <strong>"{clubRequest.name}"</strong> is awaiting system admin approval. You can use the platform as a student in the meantime.</span>
@@ -340,8 +368,8 @@ export default function DashboardPage() {
           </div>
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 ${
             clubRequest.status === 'pending'
-              ? 'bg-amber-100 text-amber-700'
-              : 'bg-red-100 text-red-700'
+              ? 'bg-amber-500/20 text-amber-300'
+              : 'bg-red-500/20 text-red-300'
           }`}>
             {clubRequest.status.toUpperCase()}
           </span>
@@ -350,49 +378,49 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {stats.map((stat) => (
-          <div key={stat.label} className="card p-5">
+          <div key={stat.label} className="card p-5 border-dark-border">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${stat.color}`}>
               {stat.icon}
             </div>
-            <p className="text-2xl font-extrabold text-gray-900">{stat.value}</p>
-            <p className="text-sm text-gray-500 mt-0.5">{stat.label}</p>
-            <p className="text-xs text-green-600 font-medium mt-1">{stat.change}</p>
+            <p className="text-2xl font-extrabold text-white">{stat.value}</p>
+            <p className="text-sm text-gray-400 mt-0.5 uppercase tracking-wide font-bold">{stat.label}</p>
+            <p className="text-xs text-accent-green font-medium mt-1">{stat.change}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="card p-6 lg:col-span-2">
-          <div className="flex items-center gap-2 mb-6">
-            <BarChart3 size={20} className="text-blue-600" />
-            <h3 className="font-bold text-gray-900">
-               {isAdmin ? 'Event Registrations (Last 6 Months)' : 'Events Attended (Last 6 Months)'}
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-bold text-white text-xl">
+               {isAdmin ? 'Event Registrations' : 'Events Attended'}
             </h3>
+            <span className="badge bg-dark-surface text-gray-400 border border-dark-border">Last 6 Months</span>
           </div>
           <div className="flex items-end gap-3 h-40">
             {chartData.map((d) => (
               <div key={d.month} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-xs font-semibold text-gray-700">{d.value}</span>
+                <span className="text-xs font-semibold text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">{d.value}</span>
                 <div
-                  className="w-full bg-blue-600 rounded-t-md hover:bg-blue-700 transition-colors cursor-pointer"
+                  className="w-full bg-accent rounded-t-sm hover:bg-accent-purple transition-colors cursor-pointer group"
                   style={{ height: `${(d.value / maxVal) * 100}%`, minHeight: '8px' }}
                 />
-                <span className="text-xs text-gray-400">{d.month}</span>
+                <span className="text-xs text-gray-500">{d.month}</span>
               </div>
             ))}
           </div>
         </div>
 
         <div className="card p-6">
-          <h3 className="font-bold text-gray-900 mb-5">Events by Category</h3>
-          <div className="space-y-3">
+          <h3 className="font-bold text-white text-xl mb-6">Events by Category</h3>
+          <div className="space-y-4">
             {categoryData.map((item) => (
               <div key={item.cat}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-700">{item.cat}</span>
-                  <span className="font-semibold text-gray-900">{item.count}</span>
+                <div className="flex justify-between text-sm mb-1.5">
+                  <span className="text-gray-300 font-medium">{item.cat}</span>
+                  <span className="font-semibold text-white">{Math.round(item.pct)}%</span>
                 </div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                <div className="w-full bg-dark-surface rounded-full h-1.5 border border-dark-border">
                   <div className={`h-1.5 rounded-full ${item.color}`} style={{ width: `${item.pct}%` }} />
                 </div>
               </div>
@@ -401,90 +429,116 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="card overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h3 className="font-bold text-gray-900">{isAdmin ? 'My Hosted Events' : 'My Registered Events'}</h3>
-          {isAdmin && (
-            <Link to="/create-event" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
-              <PlusCircle size={14} /> New
-            </Link>
+      <div className="card overflow-hidden border-dark-border">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 border-b border-dark-border gap-4">
+          {isAdmin ? (
+            <div className="flex gap-6">
+              <button
+                onClick={() => setDashboardTab('hosted')}
+                className={`py-4 font-bold text-lg transition-colors border-b-2 ${
+                  dashboardTab === 'hosted'
+                    ? 'text-accent border-b-accent'
+                    : 'text-gray-400 hover:text-gray-200 border-b-transparent'
+                }`}
+              >
+                Hosted Events
+              </button>
+              <button
+                onClick={() => setDashboardTab('registered')}
+                className={`py-4 font-bold text-lg transition-colors border-b-2 ${
+                  dashboardTab === 'registered'
+                    ? 'text-accent border-b-accent'
+                    : 'text-gray-400 hover:text-gray-200 border-b-transparent'
+                }`}
+              >
+                Participated Events
+              </button>
+            </div>
+          ) : (
+            <h3 className="font-bold text-white text-xl py-4">My Registered Events</h3>
           )}
+
+          <div className="py-2.5">
+            {isAdmin && dashboardTab === 'hosted' ? (
+              <Link to="/create-event" className="btn-primary text-sm px-4 py-1.5 flex items-center gap-1">
+                New Event
+              </Link>
+            ) : (
+              <Link to="/events" className="btn-primary bg-accent-green hover:bg-accent-greenHover text-black text-sm px-4 py-1.5 flex items-center gap-1">
+                Register New
+              </Link>
+            )}
+          </div>
         </div>
+
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-dark-surface text-gray-400 text-xs font-bold uppercase border-b border-dark-border">
               <tr>
-                <th className="px-6 py-3 text-left">Event</th>
-                <th className="px-6 py-3 text-left">Date</th>
-                <th className="px-6 py-3 text-left">Registrations</th>
-                <th className="px-6 py-3 text-left">Status</th>
-                {isAdmin && <th className="px-6 py-3 text-left">Actions</th>}
+                <th className="px-6 py-4">Event Name</th>
+                <th className="px-6 py-4">Category</th>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-dark-border text-gray-300">
               {loading ? (
                 <tr>
-                   <td colSpan="5" className="text-center py-6 text-gray-400">Loading events...</td>
+                   <td colSpan="5" className="text-center py-6 text-gray-500">Loading events...</td>
                 </tr>
-              ) : dashboardEvents.length === 0 ? (
+              ) : currentEvents.length === 0 ? (
                 <tr>
-                   <td colSpan="5" className="text-center py-6 text-gray-400">
-                     {isAdmin ? "You haven't hosted any events yet." : "You haven't registered for any events yet."}
+                   <td colSpan="5" className="text-center py-6 text-gray-500">
+                     {isAdmin && dashboardTab === 'hosted' ? "You haven't hosted any events yet." : "You haven't registered for any events yet."}
                    </td>
                 </tr>
-              ) : dashboardEvents.map((event) => (
-                <tr key={event.id} className="hover:bg-gray-50">
+              ) : currentEvents.map((event) => (
+                <tr key={event.id} className="hover:bg-dark-surface transition-colors">
                   <td className="px-6 py-4">
-                    <div className="font-medium text-gray-900">{event.title}</div>
-                    <div className="text-xs text-gray-400">{event.category}</div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">
-                    {new Date(event.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-900">{event.registrations}</span>
-                      <span className="text-gray-400">/ {event.maxSeats}</span>
-                    </div>
-                    <div className="w-24 bg-gray-100 rounded-full h-1 mt-1">
-                      <div
-                        className="h-1 rounded-full bg-blue-500"
-                        style={{ width: `${Math.min((event.registrations / event.maxSeats) * 100, 100)}%` }}
-                      />
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded bg-dark-surface border border-dark-border flex items-center justify-center text-accent text-xs font-bold">
+                        {event.title.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div className="font-bold text-white">{event.title}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`badge ${event.status === 'closed' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                      {event.status}
+                    <span className={`badge border ${
+                      event.category === 'Workshop' ? 'bg-accent-muted text-accent border-accent/30' : 
+                      event.category === 'Hackathon' ? 'bg-red-900/30 text-red-400 border-red-500/30' : 
+                      'bg-accent-mutedGreen text-accent-green border-accent-green/30'
+                    }`}>
+                      {event.category}
                     </span>
                   </td>
-                  {isAdmin && (
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <button 
-                          onClick={() => handleViewParticipants(event)}
-                          title="Manage Participants"
-                          className="text-gray-400 hover:text-blue-600 p-1 transition-colors"
-                        >
-                          <Users size={15} />
-                        </button>
-                        <button 
-                          onClick={() => handleToggleStatus(event)}
-                          title={event.status === 'closed' ? 'Re-open Event' : 'Close Event'}
-                          className={`${event.status === 'closed' ? 'text-green-500 hover:text-green-600' : 'text-gray-400 hover:text-orange-500'} p-1 transition-colors`}
-                        >
-                          <Power size={15} />
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteEvent(event.id)}
-                          title="Delete Event"
-                          className="text-gray-400 hover:text-red-500 p-1 transition-colors"
-                        >
-                          <Trash2 size={15} />
-                        </button>
+                  <td className="px-6 py-4 text-gray-400">
+                    {new Date(event.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </td>
+                  <td className="px-6 py-4">
+                    {isAdmin && dashboardTab === 'hosted' ? (
+                      <span className={`badge border ${event.status === 'closed' ? 'bg-orange-900/30 text-orange-400 border-orange-500/30' : 'bg-accent-mutedGreen text-accent-green border-accent-green/30'}`}>
+                        {event.status === 'closed' ? 'Closed' : 'Active'}
+                      </span>
+                    ) : (
+                      <span className={`badge border ${event.status === 'closed' ? 'bg-orange-900/30 text-orange-400 border-orange-500/30' : 'bg-accent-mutedGreen text-accent-green border-accent-green/30'}`}>
+                        {event.status === 'closed' ? 'Waitlisted' : 'Registered'}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    {isAdmin && dashboardTab === 'hosted' ? (
+                      <div className="flex justify-center gap-3">
+                        <button onClick={() => handleViewParticipants(event)} className="text-gray-400 hover:text-white transition-colors" title="Manage Participants"><Users size={16}/></button>
+                        <button onClick={() => handleToggleStatus(event)} className="text-gray-400 hover:text-white transition-colors" title="Toggle Status"><Power size={16}/></button>
+                        <button onClick={() => handleDeleteEvent(event.id)} className="text-gray-400 hover:text-red-400 transition-colors" title="Delete Event"><Trash2 size={16}/></button>
                       </div>
-                    </td>
-                  )}
+                    ) : (
+                      <Link to={`/events/${event.id}`} className="text-white hover:text-accent font-semibold transition-colors">
+                        Details
+                      </Link>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -492,49 +546,45 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Browse Clubs */}
-      <div className="mt-6 card p-6 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600">
-            <Building size={22} />
+      {/* Browse Clubs / Team Builder Banner */}
+      <div className="mt-8 rounded-[1.5rem] p-8 flex items-center justify-between gap-6" style={{ background: 'linear-gradient(to right, #1a1a1a, #111111)', border: '1px solid #333' }}>
+        <div className="flex items-center gap-6">
+          <div className="w-16 h-16 rounded-2xl bg-accent-muted flex items-center justify-center text-accent ring-4 ring-dark-surface">
+            <Building size={28} />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">Campus Clubs</h3>
-            <p className="text-sm text-gray-500">Browse all active clubs on your campus.</p>
+            <span className="badge bg-accent-muted text-accent border border-accent/30 mb-2">New Feature</span>
+            <h3 className="font-bold text-white text-2xl mb-1">Team Builder AI</h3>
+            <p className="text-sm text-gray-400 max-w-md">Our new AI matching algorithm helps you find the perfect teammates based on your skills and interests.</p>
           </div>
         </div>
         <Link
-          to="/clubs"
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+          to="/ai-teams"
+          className="btn-primary bg-accent-green text-black hover:bg-accent-greenHover px-6 py-3"
         >
-          Browse Clubs <ArrowRight size={15} />
+          Try Team Builder
         </Link>
       </div>
 
       {/* Participants Modal */}
       {selectedEvent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-dark-card rounded-2xl border border-dark-border shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="px-6 py-4 border-b border-dark-border flex items-center justify-between bg-dark-surface">
               <div>
-                <h3 className="font-bold text-gray-900 text-lg">Manage Participants</h3>
-                <p className="text-sm text-gray-500">{selectedEvent.title} • {participants.length} / {selectedEvent.maxSeats} Registered</p>
-                <p className="text-xs text-gray-400 mt-1 capitalize">
-                  {selectedEvent.participation_mode === 'team'
-                    ? `Team event • max ${selectedEvent.max_team_members || 1} members per registration`
-                    : 'Solo event'}
-                </p>
+                <h3 className="font-bold text-white text-lg">Manage Participants</h3>
+                <p className="text-sm text-gray-400">{selectedEvent.title} • {participants.length} / {selectedEvent.maxSeats} Registered</p>
               </div>
-              <button onClick={() => setSelectedEvent(null)} className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors">
+              <button onClick={() => setSelectedEvent(null)} className="p-2 text-gray-500 hover:text-white transition-colors">
                 <X size={20} />
               </button>
             </div>
             
-            <div className="p-6 flex-1 overflow-y-auto">
+            <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Add Participant</label>
+                <label className="block text-sm font-semibold text-gray-300 mb-2">Add Participant</label>
                 <div className="relative">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input 
                     type="text" 
                     placeholder="Search students by name..." 
@@ -544,20 +594,20 @@ export default function DashboardPage() {
                     disabled={participants.length >= selectedEvent.maxSeats}
                   />
                   {participants.length >= selectedEvent.maxSeats && (
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-red-500">Event Full</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-rose-400">Event Full</span>
                   )}
                 </div>
                 
                 {searchResults.length > 0 && (
-                  <div className="mt-2 border border-gray-100 rounded-xl shadow-sm overflow-hidden divide-y divide-gray-50">
+                  <div className="mt-2 border border-dark-border rounded-xl shadow-sm overflow-hidden divide-y divide-dark-border bg-dark-surface">
                     {searchResults.map(u => (
-                      <div key={u.id} className="p-3 flex items-center justify-between hover:bg-gray-50">
+                      <div key={u.id} className="p-3 flex items-center justify-between hover:bg-dark-card transition-colors">
                         <div>
-                          <p className="text-sm font-semibold text-gray-900">{u.name}</p>
+                          <p className="text-sm font-semibold text-white">{u.name}</p>
                           <p className="text-xs text-gray-500">{u.department || 'Student'}</p>
                         </div>
-                        <button onClick={() => handleAddParticipant(u)} className="btn-primary py-1.5 px-3 text-xs flex items-center gap-1">
-                          <UserPlus size={14} /> Add
+                        <button onClick={() => handleAddParticipant(u)} className="btn-primary py-1.5 px-4 text-xs">
+                          Add
                         </button>
                       </div>
                     ))}
@@ -566,14 +616,14 @@ export default function DashboardPage() {
               </div>
               
               <div>
-                <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-2">
-                  <label className="block text-sm font-semibold text-gray-700">Registered Students</label>
+                <div className="flex items-center justify-between mb-4 border-b border-dark-border pb-3">
+                  <label className="block text-sm font-semibold text-gray-300">Registered Students</label>
                   
                   <div className="flex items-center gap-2">
                     <select
                       value={filterBatch}
                       onChange={(e) => setFilterBatch(e.target.value)}
-                      className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-600 outline-none"
+                      className="text-xs border border-dark-border rounded-md px-2 py-1 bg-dark-surface text-gray-300 outline-none focus:border-accent"
                     >
                       <option value="">All Years</option>
                       {Array.from(new Set(participants.map(p => p.profiles?.year).filter(Boolean))).map(y => (
@@ -584,7 +634,7 @@ export default function DashboardPage() {
                     <select 
                       value={sortConfig} 
                       onChange={(e) => setSortConfig(e.target.value)}
-                      className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-600 outline-none"
+                      className="text-xs border border-dark-border rounded-md px-2 py-1 bg-dark-surface text-gray-300 outline-none focus:border-accent"
                     >
                       <option value="name_asc">Name (A-Z)</option>
                       <option value="name_desc">Name (Z-A)</option>
@@ -595,44 +645,34 @@ export default function DashboardPage() {
                 </div>
 
                 {loadingParticipants ? (
-                  <p className="text-center text-gray-400 py-4 text-sm">Loading participants...</p>
+                  <p className="text-center text-gray-500 py-4 text-sm">Loading participants...</p>
                 ) : visibleParticipants.length === 0 ? (
-                  <p className="text-center text-gray-400 py-4 text-sm bg-gray-50 rounded-xl">No participants registered yet.</p>
+                  <p className="text-center text-gray-500 py-4 text-sm bg-dark-surface border border-dark-border rounded-xl">No participants registered yet.</p>
                 ) : (
-                  <div className="space-y-5">
+                  <div className="space-y-6">
                     {teamRegistrations.length > 0 && (
                       <div>
-                        <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500">Team Registrations</h4>
-                        <div className="space-y-2">
+                        <h4 className="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">Team Registrations</h4>
+                        <div className="space-y-3">
                           {teamRegistrations.map((registration, index) => {
                             const details = registration.registration_data || {};
                             const members = details.members || [];
                             const captainName = members[0]?.name || registration.profiles?.name || 'Unknown';
-                            const captainContact = details.captain_contact || members[0]?.enrollment_no || '';
                             return (
-                              <div key={registration.id} className="rounded-xl border border-gray-100 bg-white p-4">
+                              <div key={registration.id} className="rounded-xl border border-dark-border bg-dark-surface p-4">
                                 <div className="flex items-start justify-between gap-4">
                                   <div>
-                                    <p className="text-sm font-semibold text-gray-900">{details.team_name || `Team ${index + 1}`}</p>
-                                    <p className="text-xs text-gray-500 mt-0.5">
-                                      Captain: {captainName}
-                                      {captainContact ? ` • ${captainContact}` : ''}
-                                    </p>
+                                    <p className="text-sm font-bold text-white">{details.team_name || `Team ${index + 1}`}</p>
+                                    <p className="text-xs text-gray-400 mt-0.5">Captain: {captainName}</p>
                                   </div>
-                                  <button 
-                                    onClick={() => handleRemoveParticipant(registration.id)}
-                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                    title="Remove Registration"
-                                  >
+                                  <button onClick={() => handleRemoveParticipant(registration.id)} className="p-2 text-gray-500 hover:text-rose-400 transition-colors">
                                     <Trash2 size={16} />
                                   </button>
                                 </div>
                                 <div className="mt-3 flex flex-wrap gap-2">
                                   {members.map((member, memberIndex) => (
-                                    <span key={`${registration.id}-${memberIndex}`} className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">
+                                    <span key={memberIndex} className="badge border border-dark-border bg-dark-card text-gray-300">
                                       {member.name || 'Member'}
-                                      {member.enrollment_no ? ` • ${member.enrollment_no}` : ''}
-                                      {member.year ? ` • ${member.year}` : ''}
                                     </span>
                                   ))}
                                 </div>
@@ -645,30 +685,26 @@ export default function DashboardPage() {
 
                     {soloRegistrations.length > 0 && (
                       <div>
-                        <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500">Solo Registrations</h4>
+                        <h4 className="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">Solo Registrations</h4>
                         <div className="space-y-2">
                           {soloRegistrations.map((registration) => (
-                            <div key={registration.id} className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-3 transition-colors hover:border-gray-200">
+                            <div key={registration.id} className="flex items-center justify-between rounded-xl border border-dark-border bg-dark-surface p-3 transition-colors hover:border-accent/50">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">
+                                <div className="w-10 h-10 rounded-full bg-accent-muted text-accent flex items-center justify-center font-bold text-sm">
                                   {registration.profiles?.name?.charAt(0) || 'U'}
                                 </div>
                                 <div>
-                                  <p className="text-sm font-semibold text-gray-900">
+                                  <p className="text-sm font-bold text-white">
                                     {registration.profiles?.name || 'Unknown User'}
-                                    {registration.profiles?.enrollment_no && <span className="text-gray-400 font-normal ml-2">({registration.profiles.enrollment_no})</span>}
+                                    {registration.profiles?.enrollment_no && <span className="text-gray-500 font-normal ml-2">({registration.profiles.enrollment_no})</span>}
                                   </p>
                                   <div className="flex items-center gap-2 mt-0.5">
-                                    <p className="text-xs text-gray-500 font-medium">{registration.profiles?.department || 'Student'}</p>
-                                    {registration.profiles?.year && <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">{registration.profiles.year}</span>}
+                                    <p className="text-xs text-gray-400 font-medium">{registration.profiles?.department || 'Student'}</p>
+                                    {registration.profiles?.year && <span className="text-[10px] bg-dark-card text-gray-500 px-1.5 py-0.5 rounded border border-dark-border">{registration.profiles.year}</span>}
                                   </div>
                                 </div>
                               </div>
-                              <button 
-                                onClick={() => handleRemoveParticipant(registration.id)}
-                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                title="Remove Participant"
-                              >
+                              <button onClick={() => handleRemoveParticipant(registration.id)} className="p-2 text-gray-500 hover:text-rose-400 transition-colors">
                                 <Trash2 size={16} />
                               </button>
                             </div>

@@ -109,19 +109,23 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+    <div className="min-h-screen bg-dark flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      {/* Decorative blurred background blobs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/10 rounded-full filter blur-3xl -z-10 animate-pulse duration-[8000ms]"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-purple/10 rounded-full filter blur-3xl -z-10 animate-pulse duration-[10000ms]"></div>
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="bg-dark-card border border-dark-border rounded-[2rem] p-8 shadow-2xl">
 
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <span className="text-white font-bold text-lg">CC</span>
+            <div className="w-12 h-12 bg-accent/10 border border-accent/20 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-glow">
+              <span className="text-accent font-bold text-lg">CC</span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-white">
               {step === 1 ? 'Create your account' : 'Club Details'}
             </h1>
-            <p className="text-gray-500 text-sm mt-1">
+            <p className="text-gray-400 text-sm mt-1">
               {step === 1
                 ? 'Join your campus community'
                 : 'Tell us about the club you want to create'}
@@ -131,14 +135,14 @@ export default function RegisterPage() {
           {/* Step indicator for club admin */}
           {form.role === 'club_admin' && (
             <div className="flex items-center gap-2 mb-6">
-              <div className={`flex-1 h-1.5 rounded-full ${step >= 1 ? 'bg-blue-600' : 'bg-gray-200'}`} />
-              <div className={`flex-1 h-1.5 rounded-full ${step >= 2 ? 'bg-blue-600' : 'bg-gray-200'}`} />
+              <div className={`flex-1 h-1.5 rounded-full ${step >= 1 ? 'bg-accent shadow-glow' : 'bg-dark-surface border border-dark-border'}`} />
+              <div className={`flex-1 h-1.5 rounded-full ${step >= 2 ? 'bg-accent shadow-glow' : 'bg-dark-surface border border-dark-border'}`} />
             </div>
           )}
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 text-red-700 text-sm rounded-lg px-4 py-3 border border-red-200 mb-4">
+            <div className="bg-red-950/40 text-red-400 border border-red-900/30 text-sm rounded-xl px-4 py-3 mb-4">
               {error}
             </div>
           )}
@@ -148,9 +152,9 @@ export default function RegisterPage() {
             <form onSubmit={handleStep1Continue} className="space-y-4">
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
+                <label className="block text-sm font-semibold text-gray-300 mb-1.5">Full Name</label>
                 <div className="relative">
-                  <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input
                     type="text"
                     className="input-field pl-9"
@@ -162,9 +166,9 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">College Email</label>
+                <label className="block text-sm font-semibold text-gray-300 mb-1.5">College Email</label>
                 <div className="relative">
-                  <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input
                     type="email"
                     className="input-field pl-9"
@@ -177,7 +181,7 @@ export default function RegisterPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Enrollment No. *</label>
+                  <label className="block text-sm font-semibold text-gray-300 mb-1.5">Enrollment No. *</label>
                   <input
                     type="text"
                     className="input-field"
@@ -188,7 +192,7 @@ export default function RegisterPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Batch</label>
+                  <label className="block text-sm font-semibold text-gray-300 mb-1.5">Batch</label>
                   <input
                     type="text"
                     className="input-field"
@@ -201,9 +205,9 @@ export default function RegisterPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Department</label>
+                  <label className="block text-sm font-semibold text-gray-300 mb-1.5">Department</label>
                   <div className="relative">
-                    <GraduationCap size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <GraduationCap size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                     <select
                       className="input-field pl-9 appearance-none"
                       value={form.department}
@@ -215,7 +219,7 @@ export default function RegisterPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Year</label>
+                  <label className="block text-sm font-semibold text-gray-300 mb-1.5">Year</label>
                   <select
                     className="input-field"
                     value={form.year}
@@ -229,13 +233,15 @@ export default function RegisterPage() {
 
               {/* Role selector */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">I am a...</label>
+                <label className="block text-sm font-semibold text-gray-300 mb-2">I am a...</label>
                 <div className="grid grid-cols-2 gap-3">
                   {['student', 'club_admin'].map((r) => (
                     <label
                       key={r}
-                      className={`flex items-center gap-2 border rounded-lg p-3 cursor-pointer transition-colors ${
-                        form.role === r ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                      className={`flex items-center gap-2 border rounded-xl p-3 cursor-pointer transition-all ${
+                        form.role === r 
+                          ? 'border-accent bg-accent/10 text-white shadow-glow' 
+                          : 'border-dark-border hover:border-gray-600 text-gray-400'
                       }`}
                     >
                       <input
@@ -244,25 +250,25 @@ export default function RegisterPage() {
                         value={r}
                         checked={form.role === r}
                         onChange={() => setForm({ ...form, role: r })}
-                        className="accent-blue-600"
+                        className="accent-accent"
                       />
-                      <span className="text-sm font-medium">
+                      <span className="text-sm font-semibold">
                         {r === 'club_admin' ? 'Club Admin' : 'Student'}
                       </span>
                     </label>
                   ))}
                 </div>
                 {form.role === 'club_admin' && (
-                  <p className="text-xs text-blue-600 mt-2 bg-blue-50 px-3 py-2 rounded-lg">
+                  <p className="text-xs text-accent mt-2 bg-accent/10 border border-accent/20 px-3 py-2 rounded-xl">
                     You'll be asked to provide club details in the next step. Your request will be reviewed by the system admin.
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+                <label className="block text-sm font-semibold text-gray-300 mb-1.5">Password</label>
                 <div className="relative">
-                  <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input
                     type={showPass ? 'text' : 'password'}
                     className="input-field pl-9 pr-10"
@@ -273,7 +279,7 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => setShowPass(!showPass)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
                   >
                     {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -296,9 +302,9 @@ export default function RegisterPage() {
             <form onSubmit={handleFinalSubmit} className="space-y-4">
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Club Name</label>
+                <label className="block text-sm font-semibold text-gray-300 mb-1.5">Club Name</label>
                 <div className="relative">
-                  <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input
                     type="text"
                     required
@@ -311,9 +317,9 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">College / Department</label>
+                <label className="block text-sm font-semibold text-gray-300 mb-1.5">College / Department</label>
                 <div className="relative">
-                  <GraduationCap size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <GraduationCap size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input
                     type="text"
                     required
@@ -326,9 +332,9 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Club Description</label>
+                <label className="block text-sm font-semibold text-gray-300 mb-1.5">Club Description</label>
                 <div className="relative">
-                  <FileText size={16} className="absolute left-3 top-3 text-gray-400" />
+                  <FileText size={16} className="absolute left-3 top-3 text-gray-500" />
                   <textarea
                     required
                     rows={4}
@@ -340,7 +346,7 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 text-amber-800 text-xs px-3 py-2.5 rounded-lg">
+              <div className="bg-orange-955/40 border border-orange-900/30 text-orange-400 text-xs px-3 py-2.5 rounded-xl">
                 ⏳ Your club request will be reviewed by the system admin. You can use the platform as a student while waiting for approval.
               </div>
 
@@ -348,7 +354,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => { setStep(1); setError(''); }}
-                  className="flex items-center gap-1.5 px-4 py-2.5 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 font-medium text-sm transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2.5 border border-dark-border text-gray-300 rounded-xl hover:bg-dark-surface font-medium text-sm transition-colors"
                 >
                   <ArrowLeft size={15} /> Back
                 </button>
@@ -364,9 +370,9 @@ export default function RegisterPage() {
             </form>
           )}
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-sm text-gray-400 mt-6">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-600 font-semibold hover:underline">
+            <Link to="/login" className="text-accent font-semibold hover:text-accent-purple hover:underline transition-colors">
               Sign in
             </Link>
           </p>

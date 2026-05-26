@@ -296,7 +296,7 @@ export default function ProfilePage() {
   };
 
   if (loading) {
-    return <div className="flex justify-center py-32"><div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>;
+    return <div className="flex justify-center py-32"><div className="w-8 h-8 border-4 border-violet-600 border-t-transparent rounded-full animate-spin"></div></div>;
   }
 
   if (!profile) {
@@ -305,7 +305,7 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-8">My Profile</h1>
+      <h1 className="text-3xl font-extrabold text-white mb-8">My Profile</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Left Column */}
@@ -313,13 +313,13 @@ export default function ProfilePage() {
           <div className="card p-6 text-center shadow-sm">
             <div className="relative inline-block mb-3 group">
               {profile.avatar ? (
-                <img src={profile.avatar} alt={profile.name} className="w-24 h-24 rounded-full mx-auto object-cover ring-4 ring-blue-50" />
+                <img src={profile.avatar} alt={profile.name} className="w-24 h-24 rounded-full mx-auto object-cover ring-4 ring-accent/20" />
               ) : (
-                <div className="w-24 h-24 rounded-full mx-auto bg-blue-600 text-white flex items-center justify-center text-3xl font-bold ring-4 ring-blue-50">
+                <div className="w-24 h-24 rounded-full mx-auto bg-accent text-gray-900 flex items-center justify-center text-3xl font-bold ring-4 ring-accent/20">
                   {profile.name?.charAt(0) || 'U'}
                 </div>
               )}
-              <label className={`absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full cursor-pointer transition-colors shadow-lg ${uploadingAvatar ? 'opacity-70' : ''}`}>
+              <label className={`absolute bottom-0 right-0 bg-accent hover:bg-accent-purple text-gray-900 p-2 rounded-full cursor-pointer transition-colors shadow-lg ${uploadingAvatar ? 'opacity-70' : ''}`}>
                 {uploadingAvatar ? <Loader size={14} className="animate-spin" /> : <Upload size={14} />}
                 <input 
                   type="file" 
@@ -331,26 +331,26 @@ export default function ProfilePage() {
               </label>
             </div>
             
-            <h2 className="text-xl font-bold text-gray-900 leading-tight">{profile.name}</h2>
-            <p className="text-blue-600 font-medium text-sm capitalize mt-1">{profile.role?.replace('_', ' ')}</p>
-            <p className="text-gray-500 text-xs mt-1">{profile.department} {profile.year ? `• ${profile.year}` : ''}</p>
+            <h2 className="text-xl font-bold text-white leading-tight">{profile.name}</h2>
+            <p className="text-accent font-medium text-sm capitalize mt-1">{profile.role?.replace('_', ' ')}</p>
+            <p className="text-gray-400 text-xs mt-1">{profile.department} {profile.year ? `• ${profile.year}` : ''}</p>
 
-            <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500 mt-3">
+            <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 mt-3">
               <Mail size={13} className="text-gray-400" /> {profile.email}
             </div>
 
-            <div className="mt-4 rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-left">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-blue-700">Enrollment No.</p>
-              <p className="mt-1 text-sm font-bold text-gray-900 break-all">
+            <div className="mt-4 rounded-2xl border border-dark-border bg-dark-surface px-4 py-3 text-left">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-accent">Enrollment No.</p>
+              <p className="mt-1 text-sm font-bold text-gray-200 break-all">
                 {profile.enrollment_no || 'Not added yet'}
               </p>
             </div>
 
-            <div className="flex justify-center gap-4 mt-5 pt-4 border-t border-gray-100">
-              <a href={profile.github || '#'} target="_blank" rel="noreferrer" className={`text-gray-400 hover:text-gray-900 transition-colors ${!profile.github && 'opacity-30 cursor-not-allowed'}`}>
+            <div className="flex justify-center gap-4 mt-5 pt-4 border-t border-dark-border">
+              <a href={profile.github || '#'} target="_blank" rel="noreferrer" className={`text-gray-400 hover:text-white transition-colors ${!profile.github && 'opacity-30 cursor-not-allowed'}`}>
                 <Github size={20} />
               </a>
-              <a href={profile.linkedin || '#'} target="_blank" rel="noreferrer" className={`text-gray-400 hover:text-blue-600 transition-colors ${!profile.linkedin && 'opacity-30 cursor-not-allowed'}`}>
+              <a href={profile.linkedin || '#'} target="_blank" rel="noreferrer" className={`text-gray-400 hover:text-accent transition-colors ${!profile.linkedin && 'opacity-30 cursor-not-allowed'}`}>
                 <Linkedin size={20} />
               </a>
             </div>
@@ -360,19 +360,19 @@ export default function ProfilePage() {
           </div>
 
           <div className="card p-5 shadow-sm">
-            <h3 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wider">Activity Highlights</h3>
+            <h3 className="font-bold text-gray-300 mb-4 text-sm uppercase tracking-wider">Activity Highlights</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <div className="p-1.5 bg-blue-50 rounded-lg"><Code2 size={15} className="text-blue-500" /></div> Projects
+                <div className="flex items-center gap-2.5 text-sm text-gray-400">
+                  <div className="p-1.5 bg-dark-surface rounded-lg"><Code2 size={15} className="text-accent" /></div> Projects
                 </div>
-                <span className="font-bold text-gray-900 bg-gray-50 px-2 py-0.5 rounded-md">{profile.projects.length}</span>
+                <span className="font-bold text-white bg-dark-surface px-2 py-0.5 rounded-md">{profile.projects.length}</span>
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <div className="p-1.5 bg-purple-50 rounded-lg"><Briefcase size={15} className="text-purple-500" /></div> Events
+                <div className="flex items-center gap-2.5 text-sm text-gray-400">
+                  <div className="p-1.5 bg-dark-surface rounded-lg"><Briefcase size={15} className="text-accent-purple" /></div> Events
                 </div>
-                <span className="font-bold text-gray-900 bg-gray-50 px-2 py-0.5 rounded-md">{profile.past_events?.length || 0}</span>
+                <span className="font-bold text-white bg-dark-surface px-2 py-0.5 rounded-md">{profile.past_events?.length || 0}</span>
               </div>
             </div>
           </div>
@@ -382,42 +382,42 @@ export default function ProfilePage() {
         <div className="lg:col-span-3 space-y-5">
           <div className="card p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-900">About Me</h3>
+              <h3 className="font-bold text-white">About Me</h3>
               {editBio ? (
                  <div className="flex gap-2">
-                   <button onClick={() => setEditBio(false)} className="text-sm text-gray-500 hover:text-gray-700 px-2">Cancel</button>
-                   <button onClick={saveBio} className="text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded-md font-semibold transition-colors">Save</button>
+                   <button onClick={() => setEditBio(false)} className="text-sm text-gray-400 hover:text-gray-200 px-2">Cancel</button>
+                   <button onClick={saveBio} className="text-sm bg-accent/10 text-accent hover:bg-accent/20 px-3 py-1 rounded-md font-semibold transition-colors">Save</button>
                  </div>
               ) : (
-                <button onClick={() => setEditBio(true)} className="text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 py-1 rounded-md transition-colors flex items-center gap-1.5">
+                <button onClick={() => setEditBio(true)} className="text-sm text-accent hover:text-accent-purple hover:bg-accent/10 px-2 py-1 rounded-md transition-colors flex items-center gap-1.5">
                   <Edit3 size={14} /> Edit
                 </button>
               )}
             </div>
             {editBio ? (
               <textarea
-                className="input-field min-h-[100px] resize-none focus:ring-blue-500 text-sm"
+                className="input-field min-h-[100px] resize-none focus:ring-accent text-sm"
                 value={tempBio}
                 placeholder="Write a little bit about yourself, your interests, and your goals..."
                 onChange={(e) => setTempBio(e.target.value)}
                 autoFocus
               />
             ) : (
-              <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap">{profile.bio || "No bio added yet. Click edit to introduce yourself!"}</p>
+              <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">{profile.bio || "No bio added yet. Click edit to introduce yourself!"}</p>
             )}
           </div>
 
           <div className="card p-6 shadow-sm">
-            <h3 className="font-bold text-gray-900 mb-5">Skills & Expertise</h3>
+            <h3 className="font-bold text-white mb-5">Skills & Expertise</h3>
             <div className="flex flex-wrap gap-2 mb-5">
               {profile.skills.length === 0 && <p className="text-sm text-gray-400 w-full mb-1">Add some skills to stand out to developers and clubs.</p>}
               {profile.skills.map((skill) => (
                 <span
                   key={skill}
-                  className="badge bg-blue-50 border border-blue-100 text-blue-700 flex items-center gap-1.5 text-sm px-3 py-1.5 shadow-sm"
+                  className="badge bg-dark-surface border border-dark-border text-gray-300 flex items-center gap-1.5 text-sm px-3 py-1.5 shadow-sm"
                 >
                   {skill}
-                  <button onClick={() => removeSkill(skill)} className="ml-1 text-blue-400 hover:text-red-500 transition-colors">
+                  <button onClick={() => removeSkill(skill)} className="ml-1 text-gray-500 hover:text-red-500 transition-colors">
                     <Trash2 size={13} />
                   </button>
                 </span>
@@ -426,7 +426,7 @@ export default function ProfilePage() {
             <div className="flex gap-3">
               <input
                 type="text"
-                className="input-field flex-1 text-sm bg-gray-50"
+                className="input-field flex-1 text-sm"
                 placeholder="e.g. React, Python, UI Design..."
                 value={newSkill}
                 onChange={(e) => setNewSkill(e.target.value)}
@@ -438,21 +438,21 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="card p-6 shadow-sm border-t-4 border-t-indigo-500">
+          <div className="card p-6 shadow-sm border-t-4 border-t-accent">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold text-gray-900">Projects & Portfolio</h3>
+              <h3 className="font-bold text-white">Projects & Portfolio</h3>
               <div className="flex gap-2">
-                <button onClick={() => setShowGithubImportModal(true)} className="text-sm bg-gray-50 text-gray-700 hover:bg-gray-100 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-colors shadow-sm border border-gray-200">
+                <button onClick={() => setShowGithubImportModal(true)} className="text-sm bg-dark-surface text-gray-300 hover:bg-dark-border px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-colors shadow-sm border border-dark-border">
                   <Github size={14} /> Import
                 </button>
-                <button onClick={() => setShowProjectModal(true)} className="text-sm bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-colors shadow-sm">
+                <button onClick={() => setShowProjectModal(true)} className="text-sm bg-accent/10 text-accent hover:bg-accent/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-colors shadow-sm">
                   <Plus size={15} /> Add Project
                 </button>
               </div>
             </div>
             
             {profile.projects.length === 0 ? (
-               <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+               <div className="text-center py-8 bg-dark-surface/50 rounded-xl border border-dashed border-dark-border">
                  <Code2 size={32} className="mx-auto text-gray-300 mb-2" />
                  <p className="text-sm text-gray-500 font-medium">No projects added yet.</p>
                  <p className="text-xs text-gray-400 mt-1">Showcase your hackathons or side projects here!</p>
@@ -460,36 +460,36 @@ export default function ProfilePage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                 {profile.projects.map((project) => (
-                  <div key={project.id} className="group border border-gray-200 bg-white rounded-xl p-5 hover:border-indigo-300 hover:shadow-md transition-all relative">
+                  <div key={project.id} className="group border border-dark-border bg-dark-surface rounded-xl p-5 hover:border-accent hover:shadow-md transition-all relative">
                     <button onClick={() => handleDeleteProject(project.id)} className="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Trash2 size={16} />
                     </button>
                     <div className="flex items-start justify-between pr-6">
-                      <h4 className="font-bold text-gray-900 text-base flex-1">
+                      <h4 className="font-bold text-white text-base flex-1">
                         {project.link ? (
-                          <a href={project.link} target="_blank" rel="noopener noreferrer" className="hover:text-indigo-600 transition-colors flex items-center gap-1.5 w-fit">
+                          <a href={project.link} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors flex items-center gap-1.5 w-fit">
                             {project.title} <ExternalLink size={14} className="text-gray-400" />
                           </a>
                         ) : project.title}
                       </h4>
                     </div>
-                    {project.tech && <span className="inline-block bg-gray-100 text-gray-700 mt-2.5 text-xs font-semibold px-2 py-0.5 rounded uppercase tracking-wider">{project.tech}</span>}
-                    <p className="text-sm text-gray-600 mt-3 line-clamp-3 leading-relaxed">{project.description}</p>
+                    {project.tech && <span className="inline-block bg-dark text-gray-300 mt-2.5 text-xs font-semibold px-2 py-0.5 rounded uppercase tracking-wider">{project.tech}</span>}
+                    <p className="text-sm text-gray-400 mt-3 line-clamp-3 leading-relaxed">{project.description}</p>
                   </div>
                 ))}
             </div>
             )}
           </div>
-          <div className="card p-6 shadow-sm border-t-4 border-t-emerald-500">
+          <div className="card p-6 shadow-sm border-t-4 border-t-accent-green">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold text-gray-900">Past Events & Hackathons</h3>
-              <button onClick={() => setShowEventModal(true)} className="text-sm bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-colors shadow-sm">
+              <h3 className="font-bold text-white">Past Events & Hackathons</h3>
+              <button onClick={() => setShowEventModal(true)} className="text-sm bg-accent-green/10 text-accent-green hover:bg-accent-green/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-colors shadow-sm">
                 <Plus size={15} /> Add Event
               </button>
             </div>
             
             {!profile.past_events || profile.past_events.length === 0 ? (
-               <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+               <div className="text-center py-8 bg-dark-surface/50 rounded-xl border border-dashed border-dark-border">
                  <Briefcase size={32} className="mx-auto text-gray-300 mb-2" />
                  <p className="text-sm text-gray-500 font-medium">No events added yet.</p>
                  <p className="text-xs text-gray-400 mt-1">Share the hackathons or workshops you've attended!</p>
@@ -497,16 +497,16 @@ export default function ProfilePage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                 {profile.past_events.map((evt) => (
-                  <div key={evt.id} className="group border border-gray-200 bg-white rounded-xl p-5 hover:border-emerald-300 hover:shadow-md transition-all relative">
+                  <div key={evt.id} className="group border border-dark-border bg-dark-surface rounded-xl p-5 hover:border-accent-green hover:shadow-md transition-all relative">
                     <button onClick={() => handleDeleteEvent(evt.id)} className="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Trash2 size={16} />
                     </button>
-                    <h4 className="font-bold text-gray-900 pr-6 text-base">{evt.title}</h4>
+                    <h4 className="font-bold text-white pr-6 text-base">{evt.title}</h4>
                     <div className="flex items-center gap-2 mt-2">
-                      {evt.role && <span className="inline-block bg-gray-100 text-gray-700 text-xs font-semibold px-2 py-0.5 rounded uppercase tracking-wider">{evt.role}</span>}
-                      {evt.date && <span className="text-xs text-gray-500 font-medium">{evt.date}</span>}
+                      {evt.role && <span className="inline-block bg-dark text-gray-300 text-xs font-semibold px-2 py-0.5 rounded uppercase tracking-wider">{evt.role}</span>}
+                      {evt.date && <span className="text-xs text-gray-400 font-medium">{evt.date}</span>}
                     </div>
-                    <p className="text-sm text-gray-600 mt-3 line-clamp-3 leading-relaxed">{evt.description}</p>
+                    <p className="text-sm text-gray-400 mt-3 line-clamp-3 leading-relaxed">{evt.description}</p>
                   </div>
                 ))}
               </div>
@@ -517,46 +517,46 @@ export default function ProfilePage() {
 
       {/* Settings Modal */}
       {showSettingsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
-           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                 <h3 className="font-bold text-lg text-gray-900">Edit Profile Information</h3>
-                 <button onClick={() => setShowSettingsModal(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors"><X size={20}/></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+           <div className="bg-dark-card border border-dark-border rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="px-6 py-4 border-b border-dark-border flex items-center justify-between bg-dark-surface/50">
+                 <h3 className="font-bold text-lg text-white">Edit Profile Information</h3>
+                 <button onClick={() => setShowSettingsModal(false)} className="text-gray-400 hover:text-white p-1 rounded-md hover:bg-dark-surface transition-colors"><X size={20}/></button>
               </div>
               <form onSubmit={handleSaveSettings} className="p-6 space-y-4">
                  <div>
-                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Full Name</label>
+                   <label className="block text-sm font-semibold text-gray-300 mb-1.5">Full Name</label>
                    <input type="text" required className="input-field shadow-sm" value={settingsForm.name} onChange={e => setSettingsForm({...settingsForm, name: e.target.value})} />
                  </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1.5">Department</label>
+                      <label className="block text-sm font-semibold text-gray-300 mb-1.5">Department</label>
                       <input type="text" className="input-field shadow-sm" value={settingsForm.department} onChange={e => setSettingsForm({...settingsForm, department: e.target.value})} />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1.5">Year</label>
+                      <label className="block text-sm font-semibold text-gray-300 mb-1.5">Year</label>
                       <input type="text" className="input-field shadow-sm" value={settingsForm.year} onChange={e => setSettingsForm({...settingsForm, year: e.target.value})} />
                     </div>
                  </div>
                  <div>
-                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Enrollment Number</label>
+                   <label className="block text-sm font-semibold text-gray-300 mb-1.5">Enrollment Number</label>
                    <input type="text" className="input-field shadow-sm" placeholder="e.g. 12012345" value={settingsForm.enrollment_no || ''} onChange={e => setSettingsForm({...settingsForm, enrollment_no: e.target.value})} />
                  </div>
                  <div className="grid grid-cols-2 gap-4 pt-2">
                     <div>
-                      <label className="text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5"><Github size={14}/> GitHub URL</label>
-                      <input type="url" className="input-field shadow-sm bg-gray-50 text-sm" placeholder="https://github.com/..." value={settingsForm.github} onChange={e => setSettingsForm({...settingsForm, github: e.target.value})} />
+                      <label className="text-sm font-semibold text-gray-300 mb-1.5 flex items-center gap-1.5"><Github size={14}/> GitHub URL</label>
+                      <input type="url" className="input-field shadow-sm text-sm" placeholder="https://github.com/..." value={settingsForm.github} onChange={e => setSettingsForm({...settingsForm, github: e.target.value})} />
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5"><Linkedin size={14} className="text-blue-600"/> LinkedIn URL</label>
-                      <input type="url" className="input-field shadow-sm bg-gray-50 text-sm" placeholder="https://linkedin.com/..." value={settingsForm.linkedin} onChange={e => setSettingsForm({...settingsForm, linkedin: e.target.value})} />
+                      <label className="text-sm font-semibold text-gray-300 mb-1.5 flex items-center gap-1.5"><Linkedin size={14} className="text-accent"/> LinkedIn URL</label>
+                      <input type="url" className="input-field shadow-sm text-sm" placeholder="https://linkedin.com/..." value={settingsForm.linkedin} onChange={e => setSettingsForm({...settingsForm, linkedin: e.target.value})} />
                     </div>
                  </div>
                  <div className="pt-2">
-                   <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 cursor-pointer">
+                   <label className="flex items-center gap-2 text-sm font-semibold text-gray-300 cursor-pointer">
                      <input 
                        type="checkbox" 
-                       className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 accent-blue-600"
+                       className="w-4 h-4 text-accent rounded border-dark-border bg-dark-surface focus:ring-accent accent-accent"
                        checked={settingsForm.available}
                        onChange={e => setSettingsForm({...settingsForm, available: e.target.checked})}
                      />
@@ -565,12 +565,12 @@ export default function ProfilePage() {
                  </div>
                  <div className="pt-4 flex gap-3">
                    <button type="button" onClick={() => setShowSettingsModal(false)} className="btn-secondary flex-1 py-2.5">Cancel</button>
-                   <button type="submit" disabled={savingSettings} className="btn-primary flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-200">{savingSettings ? 'Saving...' : 'Save Changes'}</button>
+                   <button type="submit" disabled={savingSettings} className="btn-primary flex-1 py-2.5">{savingSettings ? 'Saving...' : 'Save Changes'}</button>
                  </div>
                  
-                 <div className="pt-6 mt-4 border-t border-red-100">
-                    <h4 className="text-sm font-bold text-red-600 mb-2">Danger Zone</h4>
-                    <p className="text-xs text-gray-500 mb-3">Permanently delete your account and all associated data.</p>
+                 <div className="pt-6 mt-4 border-t border-dark-border">
+                    <h4 className="text-sm font-bold text-red-400 mb-2">Danger Zone</h4>
+                    <p className="text-xs text-gray-400 mb-3">Permanently delete your account and all associated data.</p>
                     <button 
                       type="button" 
                       onClick={() => {
@@ -578,7 +578,7 @@ export default function ProfilePage() {
                         setShowDeleteModal(true);
                       }}
                       disabled={isDeletingAccount}
-                      className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-sm font-semibold transition-colors disabled:opacity-50"
+                      className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 text-sm font-semibold transition-colors disabled:opacity-50"
                     >
                       {isDeletingAccount ? <Loader size={16} className="animate-spin" /> : <Trash2 size={16} />}
                       {isDeletingAccount ? 'Deleting...' : 'Delete Account'}
@@ -591,33 +591,33 @@ export default function ProfilePage() {
 
       {/* Add Project Modal */}
       {showProjectModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
-           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-indigo-50/30">
-                 <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2"><Code2 size={18} className="text-indigo-600"/> Add New Project</h3>
-                 <button onClick={() => setShowProjectModal(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors"><X size={20}/></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+           <div className="bg-dark-card border border-dark-border rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="px-6 py-4 border-b border-dark-border flex items-center justify-between bg-accent/5">
+                 <h3 className="font-bold text-lg text-white flex items-center gap-2"><Code2 size={18} className="text-accent"/> Add New Project</h3>
+                 <button onClick={() => setShowProjectModal(false)} className="text-gray-400 hover:text-white p-1 rounded-md hover:bg-dark-surface transition-colors"><X size={20}/></button>
               </div>
               <form onSubmit={handleAddProject} className="p-6 space-y-4">
                  <div>
-                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Project Title *</label>
+                   <label className="block text-sm font-semibold text-gray-300 mb-1.5">Project Title *</label>
                    <input type="text" required className="input-field shadow-sm" placeholder="e.g. AI Study Assistant" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} />
                  </div>
                  <div>
-                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Technologies Used</label>
+                   <label className="block text-sm font-semibold text-gray-300 mb-1.5">Technologies Used</label>
                    <input type="text" className="input-field shadow-sm text-sm" placeholder="e.g. React, Node.js, Tailwind" value={projectForm.tech} onChange={e => setProjectForm({...projectForm, tech: e.target.value})} />
                  </div>
                  <div>
-                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
+                   <label className="block text-sm font-semibold text-gray-300 mb-1.5">Description</label>
                    <textarea className="input-field min-h-[100px] resize-none shadow-sm text-sm" placeholder="What does it do? What was your role?" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} />
                  </div>
                  <div>
-                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Project Link (Optional)</label>
+                   <label className="block text-sm font-semibold text-gray-300 mb-1.5">Project Link (Optional)</label>
                    <input type="url" className="input-field shadow-sm text-sm" placeholder="https://github.com/... or live demo" value={projectForm.link} onChange={e => setProjectForm({...projectForm, link: e.target.value})} />
                  </div>
                  
                  <div className="pt-2 flex gap-3">
                    <button type="button" onClick={() => setShowProjectModal(false)} className="btn-secondary flex-1 py-2.5">Cancel</button>
-                   <button type="submit" disabled={savingProject} className="btn-primary flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-200">{savingProject ? 'Adding...' : 'Add Project'}</button>
+                   <button type="submit" disabled={savingProject} className="btn-primary flex-1 py-2.5">{savingProject ? 'Adding...' : 'Add Project'}</button>
                  </div>
               </form>
            </div>
@@ -625,35 +625,35 @@ export default function ProfilePage() {
       )}
       {/* Add Event Modal */}
       {showEventModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
-           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-emerald-50/30">
-                 <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2"><Briefcase size={18} className="text-emerald-600"/> Add Past Event</h3>
-                 <button onClick={() => setShowEventModal(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors"><X size={20}/></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+           <div className="bg-dark-card border border-dark-border rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="px-6 py-4 border-b border-dark-border flex items-center justify-between bg-accent-green/5">
+                 <h3 className="font-bold text-lg text-white flex items-center gap-2"><Briefcase size={18} className="text-accent-green"/> Add Past Event</h3>
+                 <button onClick={() => setShowEventModal(false)} className="text-gray-400 hover:text-white p-1 rounded-md hover:bg-dark-surface transition-colors"><X size={20}/></button>
               </div>
               <form onSubmit={handleAddEvent} className="p-6 space-y-4">
                  <div>
-                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Event Name *</label>
+                   <label className="block text-sm font-semibold text-gray-300 mb-1.5">Event Name *</label>
                    <input type="text" required className="input-field shadow-sm text-sm" placeholder="e.g. Hacktoberfest 2023" value={eventForm.title} onChange={e => setEventForm({...eventForm, title: e.target.value})} />
                  </div>
                  <div className="grid grid-cols-2 gap-4">
                    <div>
-                     <label className="block text-sm font-semibold text-gray-700 mb-1.5">Your Role</label>
+                     <label className="block text-sm font-semibold text-gray-300 mb-1.5">Your Role</label>
                      <input type="text" className="input-field shadow-sm text-sm" placeholder="e.g. Participant, Winner" value={eventForm.role} onChange={e => setEventForm({...eventForm, role: e.target.value})} />
                    </div>
                    <div>
-                     <label className="block text-sm font-semibold text-gray-700 mb-1.5">Date / Year</label>
+                     <label className="block text-sm font-semibold text-gray-300 mb-1.5">Date / Year</label>
                      <input type="text" className="input-field shadow-sm text-sm" placeholder="e.g. Oct 2023" value={eventForm.date} onChange={e => setEventForm({...eventForm, date: e.target.value})} />
                    </div>
                  </div>
                  <div>
-                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
+                   <label className="block text-sm font-semibold text-gray-300 mb-1.5">Description</label>
                    <textarea className="input-field min-h-[80px] resize-none shadow-sm text-sm" placeholder="What did you do or learn?" value={eventForm.description} onChange={e => setEventForm({...eventForm, description: e.target.value})} />
                  </div>
                  
                  <div className="pt-2 flex gap-3">
                    <button type="button" onClick={() => setShowEventModal(false)} className="btn-secondary flex-1 py-2.5">Cancel</button>
-                   <button type="submit" disabled={savingEvent} className="btn-primary flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 shadow-sm shadow-emerald-200">{savingEvent ? 'Adding...' : 'Add Event'}</button>
+                   <button type="submit" disabled={savingEvent} className="btn-primary flex-1 py-2.5">{savingEvent ? 'Adding...' : 'Add Event'}</button>
                  </div>
               </form>
            </div>
@@ -662,11 +662,11 @@ export default function ProfilePage() {
 
       {/* GitHub Import Modal */}
       {showGithubImportModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
-           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
-              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                 <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2"><Github size={18}/> Import from GitHub</h3>
-                 <button onClick={() => {setShowGithubImportModal(false); setGithubRepos([]); setSelectedRepos([]);}} className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors"><X size={20}/></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+           <div className="bg-dark-card border border-dark-border rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+              <div className="px-6 py-4 border-b border-dark-border flex items-center justify-between bg-dark-surface/50">
+                 <h3 className="font-bold text-lg text-white flex items-center gap-2"><Github size={18}/> Import from GitHub</h3>
+                 <button onClick={() => {setShowGithubImportModal(false); setGithubRepos([]); setSelectedRepos([]);}} className="text-gray-400 hover:text-white p-1 rounded-md hover:bg-dark-surface transition-colors"><X size={20}/></button>
               </div>
               
               <div className="p-6 overflow-y-auto flex-1">
@@ -682,7 +682,7 @@ export default function ProfilePage() {
                   <button 
                     onClick={handleFetchRepos} 
                     disabled={fetchingRepos || !githubUsername} 
-                    className="btn-primary bg-gray-800 hover:bg-gray-900 px-4 shadow-sm"
+                    className="btn-primary px-4"
                   >
                     {fetchingRepos ? <Loader size={16} className="animate-spin" /> : 'Fetch'}
                   </button>
@@ -690,12 +690,12 @@ export default function ProfilePage() {
                 
                 {githubRepos.length > 0 && (
                   <div className="space-y-2 mt-4 max-h-[40vh] overflow-y-auto pr-2">
-                    <p className="text-xs text-gray-500 font-semibold mb-2 uppercase">Select Repositories to Import</p>
+                    <p className="text-xs text-gray-400 font-semibold mb-2 uppercase">Select Repositories to Import</p>
                     {githubRepos.map(repo => (
-                      <label key={repo.id} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${selectedRepos.includes(repo.id) ? 'border-blue-500 bg-blue-50/30' : 'border-gray-200 hover:bg-gray-50'}`}>
+                      <label key={repo.id} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${selectedRepos.includes(repo.id) ? 'border-accent bg-accent/10' : 'border-dark-border hover:bg-dark-surface'}`}>
                          <input 
                            type="checkbox" 
-                           className="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 accent-blue-600"
+                           className="mt-1 w-4 h-4 text-accent rounded border-dark-border bg-dark-surface focus:ring-accent accent-accent"
                            checked={selectedRepos.includes(repo.id)}
                            onChange={(e) => {
                              if (e.target.checked) setSelectedRepos([...selectedRepos, repo.id]);
@@ -703,9 +703,9 @@ export default function ProfilePage() {
                            }}
                          />
                          <div>
-                           <p className="text-sm font-bold text-gray-900">{repo.name}</p>
-                           {repo.description && <p className="text-xs text-gray-600 mt-1 line-clamp-2">{repo.description}</p>}
-                           {repo.language && <span className="inline-block mt-2 text-[10px] font-bold px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded">{repo.language}</span>}
+                           <p className="text-sm font-bold text-white">{repo.name}</p>
+                           {repo.description && <p className="text-xs text-gray-400 mt-1 line-clamp-2">{repo.description}</p>}
+                           {repo.language && <span className="inline-block mt-2 text-[10px] font-bold px-1.5 py-0.5 bg-dark text-gray-300 rounded">{repo.language}</span>}
                          </div>
                       </label>
                     ))}
@@ -713,13 +713,13 @@ export default function ProfilePage() {
                 )}
               </div>
               
-              <div className="p-6 border-t border-gray-100 flex gap-3 bg-white">
+              <div className="p-6 border-t border-dark-border flex gap-3 bg-dark-card">
                 <button type="button" onClick={() => {setShowGithubImportModal(false); setGithubRepos([]); setSelectedRepos([]);}} className="btn-secondary flex-1 py-2.5">Cancel</button>
                 <button 
                   type="button" 
                   onClick={handleImportSelectedRepos}
                   disabled={importingRepos || selectedRepos.length === 0} 
-                  className="btn-primary flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 shadow-sm disabled:opacity-50"
+                  className="btn-primary flex-1 py-2.5 disabled:opacity-50"
                 >
                   {importingRepos ? 'Importing...' : `Import Selected (${selectedRepos.length})`}
                 </button>
@@ -730,17 +730,17 @@ export default function ProfilePage() {
 
       {/* Delete Account Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
-           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+           <div className="bg-dark-card border border-dark-border rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
               <div className="p-6 text-center">
-                 <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4 text-red-600">
+                 <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4 text-red-600">
                     <AlertTriangle size={24} />
                  </div>
-                 <h3 className="font-bold text-xl text-gray-900 mb-2">Delete Account</h3>
-                 <p className="text-sm text-gray-500 mb-6">Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.</p>
+                 <h3 className="font-bold text-xl text-white mb-2">Delete Account</h3>
+                 <p className="text-sm text-gray-400 mb-6">Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.</p>
                  <div className="flex gap-3">
                    <button type="button" onClick={() => setShowDeleteModal(false)} disabled={isDeletingAccount} className="btn-secondary flex-1 py-2.5">Cancel</button>
-                   <button type="button" onClick={handleDeleteAccount} disabled={isDeletingAccount} className="btn-primary flex-1 py-2.5 bg-red-600 hover:bg-red-700 shadow-sm shadow-red-200">
+                   <button type="button" onClick={handleDeleteAccount} disabled={isDeletingAccount} className="btn-primary flex-1 py-2.5 bg-red-600 hover:bg-red-700">
                      {isDeletingAccount ? <Loader size={16} className="animate-spin mx-auto" /> : 'Yes, Delete'}
                    </button>
                  </div>

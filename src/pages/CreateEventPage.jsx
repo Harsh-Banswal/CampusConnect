@@ -141,7 +141,7 @@ export default function CreateEventPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-blue-600 mb-6 text-sm">
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-violet-600 mb-6 text-sm">
         <ArrowLeft size={16} /> Back
       </button>
 
@@ -181,7 +181,7 @@ export default function CreateEventPage() {
               </select>
             )}
             {userClubs.length === 1 && (
-              <p className="mt-1 text-xs text-blue-600">Auto-filled based on your club admin profile.</p>
+              <p className="mt-1 text-xs text-violet-600">Auto-filled based on your club admin profile.</p>
             )}
           </div>
 
@@ -320,7 +320,7 @@ export default function CreateEventPage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
             <div className="flex flex-wrap gap-2 mb-2">
               {form.tags.map((tag) => (
-                <span key={tag} className="badge bg-blue-100 text-blue-700 flex items-center gap-1 px-3 py-1 text-sm">
+                <span key={tag} className="badge bg-violet-100 text-violet-700 flex items-center gap-1 px-3 py-1 text-sm">
                   {tag}
                   <button type="button" onClick={() => removeTag(tag)}><X size={12} /></button>
                 </span>
@@ -360,10 +360,10 @@ export default function CreateEventPage() {
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
+              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-violet-400 hover:bg-violet-50 transition-colors">
                 {uploadingImage ? (
                   <>
-                    <Loader size={28} className="text-blue-500 mb-2 animate-spin" />
+                    <Loader size={28} className="text-violet-500 mb-2 animate-spin" />
                     <p className="text-sm text-gray-500">Uploading...</p>
                   </>
                 ) : (

@@ -18,9 +18,12 @@ export default function Footer() {
               A unified platform for campus event discovery, community engagement, and developer matchmaking.
             </p>
             <div className="flex gap-3 mt-4">
-              <a href="#" className="hover:text-white transition-colors"><Github size={20} /></a>
+              {/* <a href="#" className="hover:text-white transition-colors"><Github size={20} /></a>
               <a href="#" className="hover:text-white transition-colors"><Twitter size={20} /></a>
-              <a href="#" className="hover:text-white transition-colors"><Linkedin size={20} /></a>
+              <a href="#" className="hover:text-white transition-colors"><Linkedin size={20} /></a> */}
+              <Github size={20} />
+              <Twitter size={20} />
+              <Linkedin size={20} />
             </div>
           </div>
 
@@ -37,11 +40,17 @@ export default function Footer() {
 
           <div>
             <h4 className="text-white font-semibold mb-3 text-sm">Support</h4>
-            <ul className="space-y-2 text-sm">
+            {/* <ul className="space-y-2 text-sm">
               <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+            </ul> */}
+            <ul className="space-y-2 text-sm">
+              <li>About Us</li>
+              <li>Contact</li>
+              <li>Privacy Policy</li>
+              <li>Terms of Service</li>
             </ul>
           </div>
         </div>

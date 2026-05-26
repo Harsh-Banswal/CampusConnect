@@ -6,10 +6,8 @@
 
 @layer base {
   :root {
-    color: #0f172a;
-    background:
-      radial-gradient(circle at top, rgba(14, 165, 233, 0.12), transparent 28%),
-      linear-gradient(180deg, #f8fbff 0%, #f8fafc 52%, #eff6ff 100%);
+    color: #ffffff;
+    background: #111111;
   }
 
   * {
@@ -22,7 +20,7 @@
 
   body {
     font-family: 'Manrope', sans-serif;
-    @apply min-h-screen bg-transparent text-slate-900 antialiased;
+    @apply min-h-screen bg-dark text-gray-200 antialiased;
   }
 
   #root {
@@ -36,27 +34,28 @@
   h5,
   h6 {
     font-family: 'Sora', sans-serif;
+    @apply text-white;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply rounded-xl bg-slate-900 px-5 py-2.5 font-semibold text-white shadow-lg shadow-slate-200 transition duration-200 hover:-translate-y-0.5 hover:bg-cyan-600 hover:shadow-cyan-100;
+    @apply rounded-xl bg-accent px-5 py-2.5 font-semibold text-gray-900 shadow-none transition duration-200 hover:-translate-y-0.5 hover:bg-accent-purple;
   }
 
   .btn-secondary {
-    @apply rounded-xl border border-slate-300 bg-white px-5 py-2.5 font-semibold text-slate-700 transition duration-200 hover:-translate-y-0.5 hover:border-cyan-300 hover:text-cyan-700;
+    @apply rounded-xl border border-dark-border bg-dark-surface px-5 py-2.5 font-semibold text-gray-300 transition duration-200 hover:-translate-y-0.5 hover:border-accent hover:text-accent;
   }
 
   .card {
-    @apply rounded-[1.5rem] border border-slate-200/80 bg-white/90 shadow-xl shadow-slate-200/50 backdrop-blur transition duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-200/70;
+    @apply rounded-[1.5rem] border border-dark-border bg-dark-card shadow-none transition duration-200 hover:-translate-y-1;
   }
 
   .input-field {
-    @apply w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-100;
+    @apply w-full rounded-xl border border-dark-border bg-dark-surface px-4 py-3 text-sm text-gray-200 shadow-none outline-none transition duration-200 placeholder:text-gray-500 focus:border-accent focus:ring-1 focus:ring-accent;
   }
 
   .badge {
-    @apply inline-block rounded-full px-2.5 py-0.5 text-xs font-medium;
+    @apply inline-block rounded-lg px-2.5 py-0.5 text-xs font-semibold;
   }
 }

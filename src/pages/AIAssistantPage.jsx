@@ -114,7 +114,7 @@ export default function AIAssistantPage() {
         <aside className="space-y-4">
           <section className="rounded-[1.5rem] border border-slate-200 bg-white/95 p-5 shadow-xl shadow-slate-200/50">
             <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-cyan-300">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-violet-300">
                 <Bot size={22} />
               </div>
               <div>
@@ -128,10 +128,10 @@ export default function AIAssistantPage() {
           </section>
 
           <section className="grid grid-cols-2 gap-3">
-            <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-4">
-              <CalendarDays className="mb-2 text-cyan-700" size={20} />
+            <div className="rounded-2xl border border-violet-100 bg-violet-50 p-4">
+              <CalendarDays className="mb-2 text-violet-700" size={20} />
               <p className="text-2xl font-black text-slate-900">{loading ? '-' : upcomingCount}</p>
-              <p className="text-xs font-semibold text-cyan-800">Upcoming</p>
+              <p className="text-xs font-semibold text-violet-800">Upcoming</p>
             </div>
             <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-4">
               <Users className="mb-2 text-indigo-700" size={20} />
@@ -147,7 +147,7 @@ export default function AIAssistantPage() {
                 <button
                   key={prompt}
                   onClick={() => askAssistant(prompt)}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-800"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-800"
                 >
                   {prompt}
                 </button>
@@ -159,7 +159,7 @@ export default function AIAssistantPage() {
         <section className="flex min-h-[640px] flex-col overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/50">
           <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
                 <Sparkles size={20} />
               </div>
               <div>
@@ -169,7 +169,7 @@ export default function AIAssistantPage() {
                 </p>
               </div>
             </div>
-            {loading && <Loader2 className="animate-spin text-cyan-600" size={20} />}
+            {loading && <Loader2 className="animate-spin text-violet-600" size={20} />}
           </div>
 
           <div className="flex-1 overflow-y-auto bg-slate-50/60 px-4 py-5 sm:px-6">
@@ -180,7 +180,7 @@ export default function AIAssistantPage() {
                   <div key={message.id} className={`flex ${fromUser ? 'justify-end' : 'justify-start'}`}>
                     <div className={`flex max-w-[85%] gap-3 ${fromUser ? 'flex-row-reverse' : ''}`}>
                       <div className={`mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${
-                        fromUser ? 'bg-slate-900 text-white' : 'bg-cyan-100 text-cyan-700'
+                        fromUser ? 'bg-slate-900 text-white' : 'bg-violet-100 text-violet-700'
                       }`}>
                         {fromUser ? <UserRound size={16} /> : <Bot size={16} />}
                       </div>
@@ -199,7 +199,7 @@ export default function AIAssistantPage() {
               {thinking && (
                 <div className="flex justify-start">
                   <div className="flex max-w-[85%] gap-3">
-                    <div className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-cyan-100 text-cyan-700">
+                    <div className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-700">
                       <Bot size={16} />
                     </div>
                     <div className="rounded-3xl rounded-bl-md border border-slate-100 bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
@@ -229,7 +229,7 @@ export default function AIAssistantPage() {
               <button
                 onClick={() => askAssistant(input)}
                 disabled={loading || thinking || !input.trim()}
-                className="rounded-2xl bg-slate-900 p-3 text-white shadow-lg shadow-slate-200 transition hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-2xl bg-slate-900 p-3 text-white shadow-lg shadow-slate-200 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Send message"
               >
                 <Send size={20} />

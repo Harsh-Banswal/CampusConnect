@@ -269,17 +269,17 @@ export default function DevelopersPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative bg-dark min-h-screen">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-1">Find Developers</h1>
-        <p className="text-gray-500">Search by skills, role, or availability to build stronger project teams for hackathons, clubs, and side projects.</p>
+        <h1 className="text-3xl font-extrabold text-white mb-2">Find Developers</h1>
+        <p className="text-gray-400">Search by skills, role, or availability to build stronger project teams for hackathons, clubs, and side projects.</p>
       </div>
 
       {/* Search & Filters */}
       <div className="mb-8 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
             className="input-field pl-10"
@@ -291,12 +291,12 @@ export default function DevelopersPage() {
         
         <button 
           onClick={() => setShowFilters(true)}
-          className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-cyan-300 relative"
+          className="flex items-center gap-2 rounded-xl border border-dark-border bg-dark-surface px-5 py-3 text-sm font-medium text-gray-300 shadow-sm transition-colors hover:border-accent hover:text-accent relative"
         >
           <SlidersHorizontal size={18} />
           Advanced Filters
           {activeFiltersCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-600 text-[10px] font-bold text-white shadow-sm">
+            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-black shadow-sm">
               {activeFiltersCount}
             </span>
           )}
@@ -304,14 +304,14 @@ export default function DevelopersPage() {
       </div>
 
       <div className="flex items-center justify-between mb-5">
-        <p className="text-sm text-slate-500">
-          Showing <strong>{filtered.length}</strong> developer{filtered.length !== 1 ? 's' : ''}
+        <p className="text-sm text-gray-400">
+          Showing <strong className="text-white">{filtered.length}</strong> developer{filtered.length !== 1 ? 's' : ''}
         </p>
         
         {activeFiltersCount > 0 && (
           <button 
             onClick={() => setFilters({ availableOnly: false, minProjects: 0, minHackathons: 0, year: '', branch: '', skills: [] })}
-            className="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1"
+            className="text-xs text-rose-400 hover:text-rose-500 font-medium flex items-center gap-1"
           >
             <X size={12}/> Clear Filters
           </button>
@@ -320,7 +320,7 @@ export default function DevelopersPage() {
 
       {loading ? (
         <div className="py-20 flex justify-center">
-          <Loader2 className="animate-spin text-cyan-600" size={40} />
+          <Loader2 className="animate-spin text-accent" size={40} />
         </div>
       ) : filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -338,54 +338,54 @@ export default function DevelopersPage() {
           ))}
         </div>
       ) : (
-        <div className="rounded-[1.75rem] border border-dashed border-slate-300 bg-white/70 py-20 text-center">
-          <div className="text-5xl mb-4">👥</div>
-          <h3 className="text-lg font-semibold text-slate-700">No developers found</h3>
-          <p className="mt-1 text-sm text-slate-400">Try adjusting your filters or search terms.</p>
+        <div className="rounded-[1.75rem] border border-dashed border-dark-border bg-dark-card py-20 text-center">
+          <div className="text-5xl mb-4 opacity-50">👥</div>
+          <h3 className="text-lg font-semibold text-white">No developers found</h3>
+          <p className="mt-1 text-sm text-gray-500">Try adjusting your filters or search terms.</p>
         </div>
       )}
 
       {/* Advanced Filters Modal */}
       {showFilters && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg animate-in zoom-in-95 duration-200">
-              <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 rounded-t-2xl">
-                 <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
-                   <SlidersHorizontal size={18} className="text-cyan-600"/> Advanced Filters
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+           <div className="bg-dark-card rounded-2xl border border-dark-border shadow-xl w-full max-w-lg animate-in zoom-in-95 duration-200">
+              <div className="px-6 py-4 border-b border-dark-border flex items-center justify-between bg-dark-surface rounded-t-2xl">
+                 <h3 className="font-bold text-lg text-white flex items-center gap-2">
+                   <SlidersHorizontal size={18} className="text-accent"/> Advanced Filters
                  </h3>
-                 <button onClick={() => setShowFilters(false)} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"><X size={20}/></button>
+                 <button onClick={() => setShowFilters(false)} className="text-gray-400 hover:text-white p-1.5 rounded-lg transition-colors"><X size={20}/></button>
               </div>
               
               <div className="p-6 space-y-6">
                  {/* Availability */}
-                 <label className="flex cursor-pointer items-center gap-3 bg-cyan-50/50 p-3 rounded-xl border border-cyan-100">
+                 <label className="flex cursor-pointer items-center gap-3 bg-accent-muted/40 p-3 rounded-xl border border-accent">
                    <input
                      type="checkbox"
-                     className="w-5 h-5 accent-cyan-600"
+                     className="w-5 h-5 accent-accent"
                      checked={filters.availableOnly}
                      onChange={(e) => setFilters({...filters, availableOnly: e.target.checked})}
                    />
-                   <span className="text-sm font-semibold text-cyan-900">Only show available developers</span>
+                   <span className="text-sm font-semibold text-accent">Only show available developers</span>
                  </label>
 
                  <div className="grid grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">Branch / Dept</label>
+                      <label className="block text-sm font-semibold text-gray-300 mb-1.5">Branch / Dept</label>
                       <select 
                         value={filters.branch} 
                         onChange={e => setFilters({...filters, branch: e.target.value})} 
-                        className="input-field shadow-sm text-sm bg-slate-50"
+                        className="input-field shadow-sm text-sm"
                       >
                          <option value="">Any Branch</option>
                          {PREDEFINED_BRANCHES.map(b => <option key={b} value={b}>{b}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">Year</label>
+                      <label className="block text-sm font-semibold text-gray-300 mb-1.5">Year</label>
                       <select 
                         value={filters.year} 
                         onChange={e => setFilters({...filters, year: e.target.value})} 
-                        className="input-field shadow-sm text-sm bg-slate-50"
+                        className="input-field shadow-sm text-sm"
                       >
                          <option value="">Any Year</option>
                          {PREDEFINED_YEARS.map(y => <option key={y} value={y}>{y}</option>)}
@@ -395,42 +395,42 @@ export default function DevelopersPage() {
 
                  <div className="grid grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">Min Projects</label>
+                      <label className="block text-sm font-semibold text-gray-300 mb-1.5">Min Projects</label>
                       <input 
                         type="number" 
                         min="0" 
                         value={filters.minProjects} 
                         onChange={e => setFilters({...filters, minProjects: Number(e.target.value)})} 
-                        className="input-field shadow-sm text-sm bg-slate-50" 
+                        className="input-field shadow-sm text-sm" 
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">Min Hackathons</label>
+                      <label className="block text-sm font-semibold text-gray-300 mb-1.5">Min Hackathons</label>
                       <input 
                         type="number" 
                         min="0" 
                         value={filters.minHackathons} 
                         onChange={e => setFilters({...filters, minHackathons: Number(e.target.value)})} 
-                        className="input-field shadow-sm text-sm bg-slate-50" 
+                        className="input-field shadow-sm text-sm" 
                       />
                     </div>
                  </div>
 
                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Required Skills</label>
+                    <label className="block text-sm font-semibold text-gray-300 mb-2">Required Skills</label>
                     <div 
-                      className="relative flex flex-wrap items-center gap-2 min-h-[46px] p-2 border border-slate-200 rounded-xl bg-slate-50 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400 transition-colors"
+                      className="relative flex flex-wrap items-center gap-2 min-h-[46px] p-2 border border-dark-border rounded-xl bg-dark-surface focus-within:border-accent focus-within:ring-1 focus-within:ring-accent transition-colors"
                       ref={dropdownRef}
                     >
                       {filters.skills.map(skill => (
                         <span 
                           key={skill}
-                          className="flex items-center gap-1.5 bg-cyan-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold shadow-sm"
+                          className="flex items-center gap-1.5 bg-accent text-black px-2.5 py-1 rounded-md text-xs font-bold shadow-sm"
                         >
                           {skill}
                           <button 
                             onClick={() => setFilters({...filters, skills: filters.skills.filter(s => s !== skill)})}
-                            className="hover:text-cyan-200 transition-colors"
+                            className="hover:text-black/60 transition-colors"
                           >
                             <X size={13}/>
                           </button>
@@ -441,7 +441,7 @@ export default function DevelopersPage() {
                         <div className="flex items-center">
                           <input
                             type="text"
-                            className="w-full bg-transparent border-none outline-none text-sm text-slate-700 placeholder-slate-400 p-1 pr-6"
+                            className="w-full bg-transparent border-none outline-none text-sm text-white placeholder-gray-500 p-1 pr-6"
                             placeholder={filters.skills.length === 0 ? "Type or select skills..." : "Add more..."}
                             value={skillInput}
                             onChange={(e) => {
@@ -459,7 +459,7 @@ export default function DevelopersPage() {
                           <button 
                             type="button"
                             onClick={() => setShowSkillDropdown(!showSkillDropdown)}
-                            className="absolute right-1 text-slate-400 hover:text-slate-600 p-0.5 rounded-md hover:bg-slate-200 transition-colors"
+                            className="absolute right-1 text-gray-400 hover:text-white p-0.5 rounded-md transition-colors"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                           </button>
@@ -467,13 +467,13 @@ export default function DevelopersPage() {
                         
                         {/* Autocomplete Dropdown */}
                         {showSkillDropdown && (
-                          <div className="absolute top-full left-0 mt-2 w-48 max-h-48 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 py-1">
+                          <div className="absolute top-full left-0 mt-2 w-48 max-h-48 overflow-y-auto bg-dark-card border border-dark-border rounded-xl shadow-lg z-50 py-1 custom-scrollbar">
                             {allSkills
                               .filter(s => s.toLowerCase().includes(skillInput.toLowerCase()) && !filters.skills.some(fs => fs.toLowerCase() === s.toLowerCase()))
                               .map(skill => (
                                 <button
                                   key={skill}
-                                  className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-cyan-50 hover:text-cyan-900 transition-colors"
+                                  className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-dark-surface hover:text-accent transition-colors"
                                   onClick={() => handleAddSkill(skill)}
                                 >
                                   {skill}
@@ -482,7 +482,7 @@ export default function DevelopersPage() {
                             
                             {skillInput.trim() && !allSkills.some(s => s.toLowerCase() === skillInput.trim().toLowerCase()) && (
                               <button
-                                className="w-full text-left px-4 py-2 text-sm text-cyan-700 hover:bg-cyan-50 font-medium transition-colors border-t border-slate-100"
+                                className="w-full text-left px-4 py-2 text-sm text-accent hover:bg-dark-surface font-medium transition-colors border-t border-dark-border"
                                 onClick={() => handleAddSkill(skillInput)}
                               >
                                 + Add "{skillInput.trim()}"
@@ -490,7 +490,7 @@ export default function DevelopersPage() {
                             )}
                             
                             {!skillInput && allSkills.length === 0 && (
-                              <div className="px-4 py-2 text-sm text-slate-500 italic">
+                              <div className="px-4 py-2 text-sm text-gray-500 italic">
                                 No skills found
                               </div>
                             )}
@@ -510,9 +510,9 @@ export default function DevelopersPage() {
                  </button>
                  <button 
                    onClick={() => setShowFilters(false)} 
-                   className="btn-primary flex-1 py-2.5 shadow-sm shadow-cyan-200 flex justify-center items-center gap-2"
+                   className="btn-primary flex-1 py-2.5 flex justify-center items-center gap-2"
                  >
-                   Show Results <span className="bg-white/20 px-2 py-0.5 rounded-md text-xs">{filtered.length}</span>
+                   Show Results <span className="bg-black/20 px-2 py-0.5 rounded-md text-xs">{filtered.length}</span>
                  </button>
               </div>
            </div>
